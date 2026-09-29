@@ -187,8 +187,8 @@ body{
 
   color: ghostwhite;
 
-  font-size:25px;
-  text-shadow: 0 0 3px black
+  font-size:15px;
+  text-shadow: 0 0 5px cadetblue;
 }
 
 
@@ -353,13 +353,13 @@ body{
 
   position:absolute;
 
-  top:100px;
+  top:55px;
   right:12px;
 
-  z-index:20;
+  z-index:0;
 
-  width:42px;
-  height:42px;
+  width:38px;
+  height:38px;
 
   border:0;
 
@@ -373,7 +373,8 @@ body{
   box-shadow:
     0 3px 12px rgba(0,0,0,.18);
 
-  font-size:23px;
+  font-size: 15px;
+  text-shadow: 0 0 8px skyblue ;
 
   display:flex;
 
@@ -1551,6 +1552,256 @@ body.dark .surahsHeader{
 
 }
 
+
+
+/* =========================================================
+   CUSTOM RESET CONFIRM MODAL
+========================================================= */
+
+#resetConfirmOverlay{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:5000;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  background:
+    rgba(0,0,0,.38);
+
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+
+  opacity:0;
+
+  transition:
+    opacity .22s ease;
+}
+
+#resetConfirmOverlay.show{
+
+  display:flex;
+
+  opacity:1;
+}
+
+
+#resetConfirmBox{
+
+  width:100%;
+
+  max-width:360px;
+
+  padding:24px 20px 18px;
+
+  background:
+    var(--header);
+
+  color:
+    var(--text);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:24px;
+
+  box-shadow:
+    0 18px 55px rgba(0,0,0,.28);
+
+  text-align:center;
+
+  transform:
+    scale(.92)
+    translateY(10px);
+
+  transition:
+    transform .25s ease;
+}
+
+
+#resetConfirmOverlay.show #resetConfirmBox{
+
+  transform:
+    scale(1)
+    translateY(0);
+
+}
+
+
+/* الأيقونة */
+
+.resetConfirmIcon{
+
+  width:62px;
+  height:62px;
+
+  margin:0 auto 15px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border-radius:20px;
+
+  background:
+    rgba(124,92,255,.12);
+
+  color:
+    var(--primary);
+
+  font-size:29px;
+
+}
+
+
+/* العنوان */
+
+.resetConfirmTitle{
+
+  margin-bottom:9px;
+
+  font-size:18px;
+
+  font-weight:700;
+
+  color:
+    var(--text);
+
+}
+
+
+/* النص */
+
+.resetConfirmText{
+
+  margin-bottom:21px;
+
+  font-size:14px;
+
+  line-height:1.7;
+
+  color:
+    var(--text);
+
+  opacity:.68;
+
+}
+
+
+/* الأزرار */
+
+.resetConfirmActions{
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+
+.resetConfirmButton{
+
+  flex:1;
+
+  min-height:46px;
+
+  border:0;
+
+  border-radius:14px;
+
+  font-family:
+    Arial,
+    Tahoma,
+    sans-serif;
+
+  font-size:14px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s,
+    opacity .2s;
+}
+
+
+.resetConfirmButton:active{
+
+  transform:scale(.96);
+
+}
+
+
+.resetConfirmCancel{
+
+  background:
+    var(--bg);
+
+  color:
+    var(--text);
+
+  border:
+    1px solid var(--border);
+
+}
+
+
+.resetConfirmYes{
+
+  background:
+    var(--primary);
+
+  color:#fff;
+
+}
+
+
+@media(max-width:380px){
+
+  #resetConfirmBox{
+
+    max-width:330px;
+
+    padding:
+      21px
+      16px
+      16px;
+
+    border-radius:21px;
+
+  }
+
+  .resetConfirmIcon{
+
+    width:56px;
+    height:56px;
+
+    font-size:26px;
+
+  }
+
+  .resetConfirmTitle{
+
+    font-size:17px;
+
+  }
+
+  .resetConfirmText{
+
+    font-size:13px;
+
+  }
+
+}
 </style>
 
 </head>
@@ -1599,14 +1850,7 @@ body.dark .surahsHeader{
 
 <header id="topBar">
 
-  <button
-    class="topButton favoritesTopButton"
-    id="favoritesButton"
-    aria-label="المفضلة"
-    type="button"
-  >
-    ★
-  </button>
+ 
 
   <button
     class="topButton surahsTopButton"
@@ -1615,6 +1859,15 @@ body.dark .surahsHeader{
     type="button"
   >
     📖
+  </button>
+  
+   <button
+    class="topButton favoritesTopButton"
+    id="favoritesButton"
+    aria-label="المفضلة"
+    type="button"
+  >
+    🤍
   </button>
 
   <div id="title">
@@ -2054,7 +2307,7 @@ body.dark .surahsHeader{
     <div class="setting">
 
       <div class="settingTitle">
-        ⭐ المفضلة
+        🤍المفضلة
       </div>
 
       <button
@@ -2088,6 +2341,66 @@ body.dark .surahsHeader{
 
 </div>
 
+
+
+
+<!-- =========================================================
+     RESET CONFIRM MODAL
+========================================================= -->
+
+<div
+  id="resetConfirmOverlay"
+  aria-hidden="true"
+>
+
+  <div
+    id="resetConfirmBox"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="resetConfirmTitle"
+  >
+
+    <div class="resetConfirmIcon">
+      ↻
+    </div>
+
+    <div
+      class="resetConfirmTitle"
+      id="resetConfirmTitle"
+    >
+      إعادة ضبط الإعدادات
+    </div>
+
+    <div class="resetConfirmText">
+      هل تريد إعادة جميع الإعدادات
+      إلى الوضع الافتراضي؟
+      <br>
+      سيتم إعادة الألوان والوضع الليلي.
+    </div>
+
+    <div class="resetConfirmActions">
+
+      <button
+        type="button"
+        class="resetConfirmButton resetConfirmCancel"
+        id="resetConfirmCancel"
+      >
+        إلغاء
+      </button>
+
+      <button
+        type="button"
+        class="resetConfirmButton resetConfirmYes"
+        id="resetConfirmYes"
+      >
+        إعادة الضبط
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
 <script>
 
@@ -2152,7 +2465,7 @@ const DEFAULTS = {
 
   text:"#222222",
 
-  primary:"#7c5cff",
+  primary:"#ffffff",
 
   bookPageBackground:"#ffffff",
 
@@ -2962,8 +3275,8 @@ function updateFavoriteButton(
 
   button.textContent =
     active
-      ? "★"
-      : "☆";
+      ? "🤍"
+      : "♡";
 
   button.classList.toggle(
     "active",
@@ -3567,33 +3880,38 @@ function applyTheme(){
   }
 
 
+  /* =========================================================
+     PRIMARY COLOR
+  ========================================================= */
+  
   const primary =
-    storageGet(
-      PRIMARY_KEY,
-      DEFAULTS.primary
-    );
-
-
+    isDark ?
+    "#000000" :
+    "#ffffff";
+  
+  
   root.style.setProperty(
     "--primary",
     primary
   );
-
+  
   root.style.setProperty(
     "--favorite",
     primary
   );
-
+  
+  
   /*
-    المنطقة خلف الكتاب مرتبطة
-    باللون الرئيسي للتطبيق.
+    المنطقة خارج صفحات الكتاب
+    تتبع اللون الرئيسي:
+    أبيض في الوضع الفاتح
+    أسود في الوضع الليلي
   */
-
+  
   root.style.setProperty(
     "--page-bg",
     primary
   );
-
 
   backgroundColor.value =
     storageGet(
@@ -4134,60 +4452,175 @@ surahSelect.addEventListener(
 
 
 /* =========================================================
-   RESET ALL SETTINGS
+   CUSTOM RESET CONFIRM MODAL
 ========================================================= */
 
-document
-  .getElementById(
+const resetSettings =
+  document.getElementById(
     "resetSettings"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      const confirmed =
-        confirm(
-          "هل تريد إعادة جميع الإعدادات إلى الوضع الافتراضي؟"
-        );
-
-
-      if(!confirmed){
-
-        return;
-
-      }
-
-
-      storageRemove(
-        THEME_KEY
-      );
-
-      storageRemove(
-        BG_KEY
-      );
-
-      storageRemove(
-        TEXT_KEY
-      );
-
-      storageRemove(
-        PRIMARY_KEY
-      );
-
-      storageRemove(
-        BOOK_PAGE_BG_KEY
-      );
-
-      storageRemove(
-        BOOK_PAGE_TEXT_KEY
-      );
-
-
-      location.reload();
-
-    }
   );
 
+const resetConfirmOverlay =
+  document.getElementById(
+    "resetConfirmOverlay"
+  );
+
+const resetConfirmCancel =
+  document.getElementById(
+    "resetConfirmCancel"
+  );
+
+const resetConfirmYes =
+  document.getElementById(
+    "resetConfirmYes"
+  );
+
+
+/* =========================================================
+   OPEN RESET CONFIRM
+========================================================= */
+
+function openResetConfirm(){
+
+  resetConfirmOverlay.classList.add(
+    "show"
+  );
+
+  resetConfirmOverlay.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+
+
+/* =========================================================
+   CLOSE RESET CONFIRM
+========================================================= */
+
+function closeResetConfirm(){
+
+  resetConfirmOverlay.classList.remove(
+    "show"
+  );
+
+  resetConfirmOverlay.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+}
+
+
+/* =========================================================
+   RESET BUTTON
+========================================================= */
+
+resetSettings.addEventListener(
+  "click",
+  openResetConfirm
+);
+
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+resetConfirmCancel.addEventListener(
+  "click",
+  closeResetConfirm
+);
+
+
+/* =========================================================
+   CONFIRM RESET
+========================================================= */
+
+resetConfirmYes.addEventListener(
+  "click",
+  () => {
+
+    storageRemove(
+      THEME_KEY
+    );
+
+    storageRemove(
+      BG_KEY
+    );
+
+    storageRemove(
+      TEXT_KEY
+    );
+
+    storageRemove(
+      PRIMARY_KEY
+    );
+
+    storageRemove(
+      BOOK_PAGE_BG_KEY
+    );
+
+    storageRemove(
+      BOOK_PAGE_TEXT_KEY
+    );
+
+    closeResetConfirm();
+
+    setTimeout(
+      () => {
+
+        location.reload();
+
+      },
+      180
+    );
+
+  }
+);
+
+
+/* =========================================================
+   CLOSE BY CLICKING OUTSIDE
+========================================================= */
+
+resetConfirmOverlay.addEventListener(
+  "click",
+  event => {
+
+    if(
+      event.target ===
+      resetConfirmOverlay
+    ){
+
+      closeResetConfirm();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Escape" &&
+      resetConfirmOverlay.classList.contains(
+        "show"
+      )
+    ){
+
+      closeResetConfirm();
+
+    }
+
+  }
+);
 
 /* =========================================================
    ZOOM + PAN
