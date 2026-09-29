@@ -1,1 +1,5528 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+>
+
+<meta
+  name="theme-color"
+  content="#f5f5f5"
+>
+
+<title>التفسير الواضح على نهج السلف الصالح</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+:root{
+
+  --bg:#f5f5f5;
+  --card:#ffffff;
+  --header:#f5f5f5;
+
+  --text:#222222;
+
+  --primary:#7c5cff;
+
+  --border:#e5e5e5;
+
+  --favorite:#7c5cff;
+
+  /* الخلفية خارج صفحات الكتاب */
+  --page-bg:var(--primary);
+
+  /* ألوان صفحات الكتاب */
+  --book-page-bg:#ffffff;
+  --book-page-text:#222222;
+
+  --shadow:
+    0 3px 14px rgba(0,0,0,.08);
+
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+body{
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-family:
+    Arial,
+    Tahoma,
+    sans-serif;
+
+  overscroll-behavior:none;
+
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+#topBar{
+
+  position:fixed;
+
+  top:0;
+  right:0;
+  left:0;
+
+  z-index:1000;
+
+  height:
+    calc(
+      58px +
+      var(--safe-top)
+    );
+
+  padding:
+    var(--safe-top)
+    12px
+    0;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:8px;
+
+  background:var(--header);
+
+  color:var(--text);
+
+  border-bottom:
+    1px solid var(--border);
+
+  box-shadow:
+    0 2px 12px rgba(0,0,0,.08);
+
+  transition:
+    background .25s,
+    color .25s;
+}
+
+#title{
+
+  flex:1;
+
+  min-width:0;
+
+  font-size:14px;
+
+  font-weight:700;
+
+  line-height:1.35;
+
+  text-align:center;
+
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+}
+
+.topButton{
+
+  flex:0 0 40px;
+
+  width:40px;
+  height:40px;
+
+  border:0;
+
+  border-radius:12px;
+
+  background:transparent;
+
+  color:var(--text);
+
+  font-size:20px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s,
+    background .2s;
+}
+
+.topButton:active{
+
+  transform:scale(.9);
+
+  background:
+    rgba(0,0,0,.06);
+}
+
+.favoritesTopButton{
+
+  color: ghostwhite;
+
+  font-size:15px;
+  text-shadow: 0 0 5px cadetblue;
+}
+
+
+/* =========================================================
+   BOOK
+========================================================= */
+
+#pages{
+
+  position:fixed;
+
+  top:
+    calc(
+      58px +
+      var(--safe-top)
+    );
+
+  right:-2px;
+  left:0;
+  bottom:0;
+
+  width:104%;
+  height:auto;
+
+  display:flex;
+
+  overflow-x:auto;
+  overflow-y:hidden;
+
+  scroll-snap-type:x mandatory;
+
+  scroll-behavior:smooth;
+
+  direction:ltr;
+
+  scrollbar-width:none;
+
+  -webkit-overflow-scrolling:touch;
+
+  overscroll-behavior-x:none;
+
+  /* اللون الرئيسي للتطبيق */
+  background:var(--primary);
+}
+
+#pages::-webkit-scrollbar{
+  display:none;
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page{
+
+  position:relative;
+
+  flex:
+    0 0 100%;
+
+  width:100%;
+  height:100%;
+
+  padding:4px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+
+  /*
+    المساحة المحيطة بالصورة = اللون الرئيسي للتطبيق
+  */
+  background:
+    var(--page-bg);
+
+  scroll-snap-align:center;
+
+  scroll-snap-stop:always;
+
+  touch-action:
+    pan-x;
+
+  isolation:isolate;
+
+  transition:
+    background .25s ease;
+}
+
+.page.zoomed{
+
+  touch-action:none;
+}
+
+
+/* =========================================================
+   BOOK IMAGE
+   إعادة تلوين صفحات الكتاب حسب إعدادات المستخدم
+========================================================= */
+
+.page img{
+
+  display:block;
+
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  max-width:100%;
+  max-height:100%;
+
+  user-select:none;
+  -webkit-user-select:none;
+
+  -webkit-user-drag:none;
+
+  pointer-events:none;
+
+  transform:
+    translate3d(0,0,0)
+    scale(1);
+
+  transform-origin:center center;
+
+  will-change:
+    transform,
+    filter;
+
+  image-rendering:auto;
+
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+
+  /*
+    يتم تطبيق الفلتر بواسطة JavaScript
+    لتحويل الأبيض إلى لون خلفية الصفحة
+    والأسود إلى لون الكتابة.
+  */
+
+  filter:none;
+
+  transition:
+    transform .08s linear;
+    
+    
+  
+  -webkit-font-smoothing:antialiased;
+  transform:translateZ(0);
+
+}
+
+
+/* =========================================================
+   FAVORITE
+========================================================= */
+
+.favoriteButton{
+
+  position:absolute;
+
+  top:55px;
+  right:12px;
+
+  z-index:0;
+
+  width:38px;
+  height:38px;
+
+  border:0;
+
+  border-radius:50%;
+
+  background:
+    rgba(255,255,255,.94);
+
+  color:#777;
+
+  box-shadow:
+    0 3px 12px rgba(0,0,0,.18);
+
+  font-size: 15px;
+  text-shadow: 0 0 8px skyblue ;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s,
+    color .2s;
+}
+
+.favoriteButton:active{
+  transform:scale(.88);
+}
+
+.favoriteButton.active{
+  color:var(--favorite);
+}
+
+
+/* =========================================================
+   PAGE NUMBER
+========================================================= */
+
+.pageNumber{
+
+  position:absolute;
+
+  bottom:14px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  z-index:20;
+
+  min-width:34px;
+
+  padding:
+    4px
+    9px;
+
+  border-radius:10px;
+
+  background:
+    rgba(255,255,255,.82);
+
+  color:#222;
+
+  font-size:12px;
+
+  font-weight:600;
+
+  text-align:center;
+
+  box-shadow:
+    0 2px 7px rgba(0,0,0,.08);
+
+  pointer-events:none;
+
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+
+
+/* =========================================================
+   CURRENT PAGE INDICATOR
+========================================================= */
+
+#pageIndicator{
+
+  position:fixed;
+
+  left:50%;
+
+  bottom:
+    calc(
+      12px +
+      var(--safe-bottom)
+    );
+
+  transform:
+    translateX(-50%);
+
+  z-index:950;
+
+  padding:
+    6px
+    12px;
+
+  min-width:105px;
+
+  border-radius:20px;
+
+  background:
+    rgba(0,0,0,.72);
+
+  color:#fff;
+
+  font-size:12px;
+
+  text-align:center;
+
+  pointer-events:none;
+
+  opacity:0;
+
+  transition:opacity .25s;
+
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+
+#pageIndicator.show{
+  opacity:1;
+}
+
+
+/* =========================================================
+   SETTINGS OVERLAY
+========================================================= */
+
+#settingsOverlay{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:2000;
+
+  display:none;
+
+  align-items:flex-end;
+  justify-content:center;
+
+  background:
+    rgba(0,0,0,.30);
+
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+
+  opacity:0;
+
+  transition:
+    opacity .2s;
+}
+
+#settingsOverlay.show{
+
+  display:flex;
+
+  opacity:1;
+}
+
+
+/* =========================================================
+   SETTINGS PANEL
+========================================================= */
+
+#settingsPanel{
+
+  width:100%;
+
+  max-width:620px;
+
+  max-height:
+    calc(
+      92vh -
+      var(--safe-top)
+    );
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  padding:
+    10px
+    16px
+    calc(
+      28px +
+      var(--safe-bottom)
+    );
+
+  background:var(--header);
+
+  color:var(--text);
+
+  border-radius:
+    28px
+    28px
+    0
+    0;
+
+  box-shadow:
+    0 -10px 40px rgba(0,0,0,.25);
+
+  transform:
+    translateY(100%);
+
+  transition:
+    transform .28s ease;
+
+  overscroll-behavior:contain;
+}
+
+#settingsOverlay.show #settingsPanel{
+
+  transform:
+    translateY(0);
+}
+
+
+/* =========================================================
+   SETTINGS HANDLE
+========================================================= */
+
+#settingsPanel::before{
+
+  content:"";
+
+  display:block;
+
+  width:42px;
+  height:5px;
+
+  margin:
+    2px
+    auto
+    16px;
+
+  border-radius:20px;
+
+  background:#cfcfcf;
+}
+
+
+/* =========================================================
+   SETTINGS HEADER
+========================================================= */
+
+.settingsHeader{
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  min-height:48px;
+
+  margin-bottom:12px;
+}
+
+.settingsHeader h2{
+
+  font-size:20px;
+
+  font-weight:700;
+}
+
+.closeButton{
+
+  width:40px;
+  height:40px;
+
+  border:0;
+
+  border-radius:13px;
+
+  background:
+    var(--bg);
+
+  color:var(--text);
+
+  font-size:18px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s;
+}
+
+.closeButton:active{
+  transform:scale(.9);
+}
+
+
+/* =========================================================
+   SETTING CARD
+========================================================= */
+
+.setting{
+
+  padding:
+    16px
+    15px;
+
+  margin-bottom:10px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:18px;
+
+  background:
+    var(--header);
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.035);
+}
+
+.setting:last-child{
+  margin-bottom:0;
+}
+
+
+/* =========================================================
+   SETTING TITLE
+========================================================= */
+
+.settingTitle{
+
+  display:flex;
+
+  align-items:center;
+
+  min-height:24px;
+
+  margin-bottom:13px;
+
+  color:var(--text);
+
+  font-size:15px;
+
+  font-weight:700;
+}
+
+
+/* =========================================================
+   SETTING ROW
+========================================================= */
+
+.settingRow{
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:12px;
+
+  min-height:42px;
+}
+
+.settingRow > span{
+
+  font-size:14px;
+
+  color:var(--text);
+}
+
+
+/* =========================================================
+   SWITCH
+========================================================= */
+
+.switch{
+
+  position:relative;
+
+  flex:none;
+
+  width:52px;
+  height:30px;
+}
+
+.switch input{
+
+  position:absolute;
+
+  width:0;
+  height:0;
+
+  opacity:0;
+}
+
+.slider{
+
+  position:absolute;
+
+  inset:0;
+
+  background:#d2d2d2;
+
+  border-radius:30px;
+
+  transition:.25s;
+}
+
+.slider::before{
+
+  content:"";
+
+  position:absolute;
+
+  width:24px;
+  height:24px;
+
+  left:3px;
+  top:3px;
+
+  background:#fff;
+
+  border-radius:50%;
+
+  box-shadow:
+    0 2px 5px rgba(0,0,0,.18);
+
+  transition:.25s;
+}
+
+.switch input:checked + .slider{
+
+  background:
+    var(--primary);
+}
+
+.switch input:checked + .slider::before{
+
+  transform:
+    translateX(22px);
+}
+
+
+/* =========================================================
+   COLORS
+========================================================= */
+
+.colorControl{
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  min-height:48px;
+
+  gap:15px;
+
+  padding:7px 0;
+
+  margin-top:4px;
+}
+
+.colorControl + .colorControl{
+
+  border-top:
+    1px solid var(--border);
+}
+
+.colorControl label{
+
+  flex:1;
+
+  font-size:14px;
+
+  color:var(--text);
+}
+
+.colorControl input[type="color"]{
+
+  flex:0 0 48px;
+
+  width:48px;
+  height:36px;
+
+  padding:3px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:10px;
+
+  background:
+    var(--header);
+
+  overflow:hidden;
+}
+
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+#surahSelect{
+
+  width:100%;
+  height:48px;
+
+  padding:
+    0
+    14px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:13px;
+
+  background:
+    var(--bg);
+
+  color:
+    var(--text);
+
+  font-family:
+    Arial,
+    Tahoma,
+    sans-serif;
+
+  font-size:14px;
+
+  outline:none;
+
+  appearance:auto;
+}
+
+#surahSelect:focus{
+
+  border-color:
+    var(--primary);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(124,92,255,.12);
+}
+
+
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
+
+.actionButton{
+
+  width:100%;
+
+  min-height:46px;
+
+  margin-top:9px;
+
+  padding:
+    0
+    15px;
+
+  border:0;
+
+  border-radius:13px;
+
+  background:
+    var(--bg);
+
+  color:
+    var(--text);
+
+  font-size:14px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s,
+    background .2s;
+}
+
+.actionButton:active{
+  transform:scale(.98);
+}
+
+.actionButton.primary{
+
+  background:
+    var(--primary);
+
+  color:#fff;
+}
+
+#goLastPage{
+
+  min-height:42px;
+
+  background:
+    var(--primary);
+
+  color:#fff;
+
+  font-weight:700;
+}
+
+
+/* =========================================================
+   FAVORITES SCREEN
+========================================================= */
+
+#favoritesList{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:1900;
+
+  display:none;
+
+  background:
+    var(--bg);
+
+  color:
+    var(--text);
+
+  overflow-y:auto;
+
+  padding:
+    calc(
+      70px +
+      var(--safe-top)
+    )
+    15px
+    calc(
+      30px +
+      var(--safe-bottom)
+    );
+
+  overscroll-behavior:contain;
+}
+
+#favoritesList.show{
+  display:block;
+}
+
+.favoritesHeader{
+
+  position:fixed;
+
+  top:0;
+  right:0;
+  left:0;
+
+  z-index:10;
+
+  min-height:
+    calc(
+      58px +
+      var(--safe-top)
+    );
+
+  padding:
+    var(--safe-top)
+    12px
+    0;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  background:
+    var(--header);
+
+  color:
+    var(--text);
+
+  border-bottom:
+    1px solid var(--border);
+
+  box-shadow:
+    0 2px 10px rgba(0,0,0,.06);
+}
+
+.favoritesHeader strong{
+
+  font-size:16px;
+}
+
+.favoriteItem{
+
+  width:100%;
+
+  min-height:58px;
+
+  padding:
+    14px
+    15px;
+
+  margin-bottom:10px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:15px;
+
+  background:
+    var(--header);
+
+  color:
+    var(--text);
+
+  text-align:right;
+
+  font-size:14px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.04);
+
+  transition:
+    transform .15s;
+}
+
+.favoriteItem:active{
+
+  transform:
+    scale(.98);
+}
+
+.emptyMessage{
+
+  padding:
+    70px
+    20px;
+
+  text-align:center;
+
+  color:
+    var(--text);
+
+  opacity:.6;
+
+  font-size:14px;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark .favoriteButton{
+
+  background:
+    rgba(40,40,40,.94);
+
+  color:#aaa;
+}
+
+body.dark .favoriteButton.active{
+
+  color:
+    var(--favorite);
+}
+
+body.dark .pageNumber{
+
+  background:
+    rgba(30,30,30,.82);
+
+  color:#fff;
+}
+
+
+/* =========================================================
+   SMALL SCREENS
+========================================================= */
+
+@media(max-width:380px){
+
+  #title{
+    font-size:15px;
+  }
+
+  .topButton{
+    width:38px;
+    height:38px;
+  }
+
+  .favoriteButton{
+    width:38px;
+    height:38px;
+    top:9px;
+    right:9px;
+  }
+
+  .setting{
+    padding:14px 12px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *::before,
+  *::after{
+
+    scroll-behavior:auto !important;
+
+    transition:none !important;
+
+    animation:none !important;
+  }
+
+}
+
+
+/* =========================================================
+   SURAH BUTTON
+========================================================= */
+
+.surahsTopButton{
+
+  font-size:21px;
+
+}
+
+
+/* =========================================================
+   SURAH LIST OVERLAY
+========================================================= */
+
+#surahsOverlay{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:2100;
+
+  display:none;
+
+  align-items:flex-start;
+  justify-content:center;
+
+  padding:
+    calc(
+      70px +
+      var(--safe-top)
+    )
+    12px
+    20px;
+
+  background:
+    rgba(0,0,0,.32);
+
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+
+  opacity:0;
+
+  transition:
+    opacity .2s ease;
+
+}
+
+
+#surahsOverlay.show{
+
+  display:flex;
+
+  opacity:1;
+
+}
+
+
+/* =========================================================
+   SURAH PANEL
+========================================================= */
+
+#surahsPanel{
+
+  width:100%;
+
+  max-width:620px;
+
+  max-height:
+    calc(
+      90vh -
+      var(--safe-top)
+    );
+
+  overflow:hidden;
+
+  display:flex;
+
+  flex-direction:column;
+
+  background:
+    var(--header);
+
+  color:
+    var(--text);
+
+  border-radius:24px;
+
+  box-shadow:
+    0 15px 45px rgba(0,0,0,.28);
+
+  transform:
+    translateY(-15px);
+
+  transition:
+    transform .25s ease;
+
+}
+
+
+#surahsOverlay.show #surahsPanel{
+
+  transform:
+    translateY(0);
+
+}
+
+
+/* =========================================================
+   SURAH HEADER
+========================================================= */
+
+.surahsHeader{
+
+  flex:none;
+
+  min-height:58px;
+
+  padding:
+    8px
+    12px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  background:
+    var(--header);
+
+  border-bottom:
+    1px solid var(--border);
+
+}
+
+
+.surahsHeader strong{
+
+  flex:1;
+
+  text-align:center;
+
+  font-size:17px;
+
+}
+
+
+/* =========================================================
+   SURAH LIST
+========================================================= */
+
+#surahsList{
+
+  flex:1;
+
+  overflow-y:auto;
+
+  padding:
+    10px;
+
+  overscroll-behavior:contain;
+
+}
+
+
+/* =========================================================
+   SURAH ITEM
+========================================================= */
+
+.surahItem{
+
+  width:100%;
+
+  min-height:52px;
+
+  margin-bottom:8px;
+
+  padding:
+    10px
+    14px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:15px;
+
+  background:
+    var(--bg);
+
+  color:
+    var(--text);
+
+  cursor:pointer;
+
+  font-family:
+    Arial,
+    Tahoma,
+    sans-serif;
+
+  text-align:right;
+
+  transition:
+    transform .15s,
+    background .2s,
+    border-color .2s;
+
+}
+
+
+.surahItem:last-child{
+
+  margin-bottom:0;
+
+}
+
+
+.surahItem:active{
+
+  transform:
+    scale(.98);
+
+}
+
+
+.surahNumber{
+
+  flex:0 0 38px;
+
+  width:38px;
+  height:38px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border-radius:11px;
+
+  background:
+    var(--primary);
+
+  color:#fff;
+
+  font-size:13px;
+
+  font-weight:700;
+
+}
+
+
+.surahName{
+
+  flex:1;
+
+  font-size:15px;
+
+  font-weight:600;
+
+}
+
+
+.surahArrow{
+
+  flex:none;
+
+  font-size:15px;
+
+  opacity:.45;
+
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark .surahItem{
+
+  background:
+    #202020;
+
+}
+
+
+body.dark .surahsHeader{
+
+  background:
+    #1b1b1b;
+
+}
+
+
+/* =========================================================
+   SMALL SCREEN
+========================================================= */
+
+@media(max-width:380px){
+
+  #surahsOverlay{
+
+    padding:
+      calc(
+        66px +
+        var(--safe-top)
+      )
+      8px
+      12px;
+
+  }
+
+  #surahsPanel{
+
+    border-radius:20px;
+
+  }
+
+  .surahItem{
+
+    min-height:49px;
+
+    padding:
+      8px
+      11px;
+
+  }
+
+  .surahNumber{
+
+    width:35px;
+    height:35px;
+
+    flex-basis:35px;
+
+  }
+
+  .surahName{
+
+    font-size:14px;
+
+  }
+
+}
+
+
+
+/* =========================================================
+   CUSTOM RESET CONFIRM MODAL
+========================================================= */
+
+#resetConfirmOverlay{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:5000;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  background:
+    rgba(0,0,0,.38);
+
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+
+  opacity:0;
+
+  transition:
+    opacity .22s ease;
+}
+
+#resetConfirmOverlay.show{
+
+  display:flex;
+
+  opacity:1;
+}
+
+
+#resetConfirmBox{
+
+  width:100%;
+
+  max-width:360px;
+
+  padding:24px 20px 18px;
+
+  background:
+    var(--header);
+
+  color:
+    var(--text);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:24px;
+
+  box-shadow:
+    0 18px 55px rgba(0,0,0,.28);
+
+  text-align:center;
+
+  transform:
+    scale(.92)
+    translateY(10px);
+
+  transition:
+    transform .25s ease;
+}
+
+
+#resetConfirmOverlay.show #resetConfirmBox{
+
+  transform:
+    scale(1)
+    translateY(0);
+
+}
+
+
+/* الأيقونة */
+
+.resetConfirmIcon{
+
+  width:62px;
+  height:62px;
+
+  margin:0 auto 15px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border-radius:20px;
+
+  background:
+    rgba(124,92,255,.12);
+
+  color:
+    var(--primary);
+
+  font-size:29px;
+
+}
+
+
+/* العنوان */
+
+.resetConfirmTitle{
+
+  margin-bottom:9px;
+
+  font-size:18px;
+
+  font-weight:700;
+
+  color:
+    var(--text);
+
+}
+
+
+/* النص */
+
+.resetConfirmText{
+
+  margin-bottom:21px;
+
+  font-size:14px;
+
+  line-height:1.7;
+
+  color:
+    var(--text);
+
+  opacity:.68;
+
+}
+
+
+/* الأزرار */
+
+.resetConfirmActions{
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+
+.resetConfirmButton{
+
+  flex:1;
+
+  min-height:46px;
+
+  border:0;
+
+  border-radius:14px;
+
+  font-family:
+    Arial,
+    Tahoma,
+    sans-serif;
+
+  font-size:14px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s,
+    opacity .2s;
+}
+
+
+.resetConfirmButton:active{
+
+  transform:scale(.96);
+
+}
+
+
+.resetConfirmCancel{
+
+  background:
+    var(--bg);
+
+  color:
+    var(--text);
+
+  border:
+    1px solid var(--border);
+
+}
+
+
+.resetConfirmYes{
+
+  background:
+    var(--primary);
+
+  color:#fff;
+
+}
+
+
+@media(max-width:380px){
+
+  #resetConfirmBox{
+
+    max-width:330px;
+
+    padding:
+      21px
+      16px
+      16px;
+
+    border-radius:21px;
+
+  }
+
+  .resetConfirmIcon{
+
+    width:56px;
+    height:56px;
+
+    font-size:26px;
+
+  }
+
+  .resetConfirmTitle{
+
+    font-size:17px;
+
+  }
+
+  .resetConfirmText{
+
+    font-size:13px;
+
+  }
+
+}
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SVG COLOR FILTER
+========================================================= -->
+
+<svg
+  width="0"
+  height="0"
+  style="position:absolute"
+  aria-hidden="true"
+>
+
+  <filter
+    id="pageColorFilter"
+    color-interpolation-filters="sRGB"
+  >
+
+    <feColorMatrix
+      id="pageColorMatrix"
+      type="matrix"
+      values="
+        .299  .587  .114  0  .8627
+        .299  .587  .114  0  .8627
+        .299  .587  .114  0  .8627
+        0     0     0     1  0
+      "
+    />
+
+  </filter>
+
+</svg>
+
+
+<!-- =========================================================
+     TOP BAR
+========================================================= -->
+
+<!-- استبدل header الحالي بهذا -->
+
+<header id="topBar">
+
+ 
+
+  <button
+    class="topButton surahsTopButton"
+    id="surahsButton"
+    aria-label="السور"
+    type="button"
+  >
+    📖
+  </button>
+  
+   <button
+    class="topButton favoritesTopButton"
+    id="favoritesButton"
+    aria-label="المفضلة"
+    type="button"
+  >
+    🤍
+  </button>
+
+  <div id="title">
+    التفسير الواضح على نهج السلف الصالح
+  </div>
+
+  <button
+    class="topButton"
+    id="settingsButton"
+    aria-label="الإعدادات"
+    type="button"
+  >
+    ⚙️
+  </button>
+
+</header>
+
+
+<!-- أضف هذا مباشرة بعد header -->
+
+<div id="surahsOverlay">
+
+  <div id="surahsPanel">
+
+    <div class="surahsHeader">
+
+      <strong>
+        📖 سور القرآن الكريم
+      </strong>
+
+      <button
+        class="closeButton"
+        id="closeSurahs"
+        aria-label="إغلاق"
+        type="button"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div id="surahsList"></div>
+
+  </div>
+
+</div>
+
+<!-- =========================================================
+     BOOK
+========================================================= -->
+
+<div id="pages"></div>
+
+
+<!-- =========================================================
+     PAGE INDICATOR
+========================================================= -->
+
+<div id="pageIndicator">
+  الصفحة 1 / 672
+</div>
+
+
+<!-- =========================================================
+     FAVORITES
+========================================================= -->
+
+<div id="favoritesList">
+
+  <div class="favoritesHeader">
+
+    <button
+      class="closeButton"
+      id="closeFavorites"
+      aria-label="إغلاق"
+      type="button"
+    >
+      ✕
+    </button>
+
+    <strong>
+      المفضلة
+    </strong>
+
+    <div style="width:40px"></div>
+
+  </div>
+
+  <div id="favoritesContent"></div>
+
+</div>
+
+
+<!-- =========================================================
+     SETTINGS
+========================================================= -->
+
+<div id="settingsOverlay">
+
+  <div id="settingsPanel">
+
+    <div class="settingsHeader">
+
+      <h2>
+        ⚙️ الإعدادات
+      </h2>
+
+      <button
+        class="closeButton"
+        id="closeSettings"
+        aria-label="إغلاق"
+        type="button"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         SURAH
+    ====================================================== -->
+
+    <div class="setting">
+
+      <div class="settingTitle">
+        📖 الانتقال إلى سورة
+      </div>
+
+      <select id="surahSelect">
+
+        <option value="">
+          اختر السورة
+        </option>
+
+        <option value="1">الفاتحة</option>
+        <option value="2">البقرة</option>
+        <option value="3">آل عمران</option>
+        <option value="4">النساء</option>
+        <option value="5">المائدة</option>
+        <option value="6">الأنعام</option>
+        <option value="7">الأعراف</option>
+        <option value="8">الأنفال</option>
+        <option value="9">التوبة</option>
+        <option value="10">يونس</option>
+        <option value="11">هود</option>
+        <option value="12">يوسف</option>
+        <option value="13">الرعد</option>
+        <option value="14">إبراهيم</option>
+        <option value="15">الحجر</option>
+        <option value="16">النحل</option>
+        <option value="17">الإسراء</option>
+        <option value="18">الكهف</option>
+        <option value="19">مريم</option>
+        <option value="20">طه</option>
+        <option value="21">الأنبياء</option>
+        <option value="22">الحج</option>
+        <option value="23">المؤمنون</option>
+        <option value="24">النور</option>
+        <option value="25">الفرقان</option>
+        <option value="26">الشعراء</option>
+        <option value="27">النمل</option>
+        <option value="28">القصص</option>
+        <option value="29">العنكبوت</option>
+        <option value="30">الروم</option>
+        <option value="31">لقمان</option>
+        <option value="32">السجدة</option>
+        <option value="33">الأحزاب</option>
+        <option value="34">سبأ</option>
+        <option value="35">فاطر</option>
+        <option value="36">يس</option>
+        <option value="37">الصافات</option>
+        <option value="38">ص</option>
+        <option value="39">الزمر</option>
+        <option value="40">غافر</option>
+        <option value="41">فصلت</option>
+        <option value="42">الشورى</option>
+        <option value="43">الزخرف</option>
+        <option value="44">الدخان</option>
+        <option value="45">الجاثية</option>
+        <option value="46">الأحقاف</option>
+        <option value="47">محمد</option>
+        <option value="48">الفتح</option>
+        <option value="49">الحجرات</option>
+        <option value="50">ق</option>
+        <option value="51">الذاريات</option>
+        <option value="52">الطور</option>
+        <option value="53">النجم</option>
+        <option value="54">القمر</option>
+        <option value="55">الرحمن</option>
+        <option value="56">الواقعة</option>
+        <option value="57">الحديد</option>
+        <option value="58">المجادلة</option>
+        <option value="59">الحشر</option>
+        <option value="60">الممتحنة</option>
+        <option value="61">الصف</option>
+        <option value="62">الجمعة</option>
+        <option value="63">المنافقون</option>
+        <option value="64">التغابن</option>
+        <option value="65">الطلاق</option>
+        <option value="66">التحريم</option>
+        <option value="67">الملك</option>
+        <option value="68">القلم</option>
+        <option value="69">الحاقة</option>
+        <option value="70">المعارج</option>
+        <option value="71">نوح</option>
+        <option value="72">الجن</option>
+        <option value="73">المزمل</option>
+        <option value="74">المدثر</option>
+        <option value="75">القيامة</option>
+        <option value="76">الإنسان</option>
+        <option value="77">المرسلات</option>
+        <option value="78">النبأ</option>
+        <option value="79">النازعات</option>
+        <option value="80">عبس</option>
+        <option value="81">التكوير</option>
+        <option value="82">الانفطار</option>
+        <option value="83">المطففين</option>
+        <option value="84">الانشقاق</option>
+        <option value="85">البروج</option>
+        <option value="86">الطارق</option>
+        <option value="87">الأعلى</option>
+        <option value="88">الغاشية</option>
+        <option value="89">الفجر</option>
+        <option value="90">البلد</option>
+        <option value="91">الشمس</option>
+        <option value="92">الليل</option>
+        <option value="93">الضحى</option>
+        <option value="94">الشرح</option>
+        <option value="95">التين</option>
+        <option value="96">العلق</option>
+        <option value="97">القدر</option>
+        <option value="98">البينة</option>
+        <option value="99">الزلزلة</option>
+        <option value="100">العاديات</option>
+        <option value="101">القارعة</option>
+        <option value="102">التكاثر</option>
+        <option value="103">العصر</option>
+        <option value="104">الهمزة</option>
+        <option value="105">الفيل</option>
+        <option value="106">قريش</option>
+        <option value="107">الماعون</option>
+        <option value="108">الكوثر</option>
+        <option value="109">الكافرون</option>
+        <option value="110">النصر</option>
+        <option value="111">المسد</option>
+        <option value="112">الإخلاص</option>
+        <option value="113">الفلق</option>
+        <option value="114">الناس</option>
+
+      </select>
+
+    </div>
+
+
+    <!-- =====================================================
+         DARK MODE
+    ====================================================== -->
+
+    <div class="setting">
+
+      <div class="settingTitle">
+        🌙 الوضع الليلي
+      </div>
+
+      <div class="settingRow">
+
+        <span id="themeText">
+          الوضع الفاتح
+        </span>
+
+        <label class="switch">
+
+          <input
+            type="checkbox"
+            id="darkMode"
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         APP COLORS
+    ====================================================== -->
+
+    <div class="setting">
+
+      <div class="settingTitle">
+        🎨 ألوان التطبيق
+      </div>
+
+      <div class="colorControl">
+
+        <label>
+          لون خلفية التطبيق
+        </label>
+
+        <input
+          type="color"
+          id="backgroundColor"
+          value="#f5f5f5"
+        >
+
+      </div>
+
+
+      <div class="colorControl">
+
+        <label>
+          لون كتابة التطبيق
+        </label>
+
+        <input
+          type="color"
+          id="textColor"
+          value="#222222"
+        >
+
+      </div>
+
+
+      <div class="colorControl">
+
+        <label>
+          اللون الرئيسي
+        </label>
+
+        <input
+          type="color"
+          id="primaryColor"
+          value="#7c5cff"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BOOK PAGE COLORS
+    ====================================================== -->
+
+    <div class="setting">
+
+      <div class="settingTitle">
+        📖 ألوان صفحات الكتاب
+      </div>
+
+      <div class="colorControl">
+        
+            <label>
+              لون خلفية صفحات الكتاب
+            </label>
+
+      
+
+        <input
+          type="color"
+          id="bookPageBackgroundColor"
+          value="#ffffff"
+        >
+
+      </div>
+
+
+      <div class="colorControl">
+        
+
+        <label>
+          لون الكتابة داخل الصفحات
+        </label>
+
+        <input
+          type="color"
+          id="bookPageTextColor"
+          value="#222222"
+        >
+
+      </div>
+
+
+      <button
+        class="actionButton"
+        id="resetBookPageColors"
+        type="button"
+      >
+        🔄 إعادة ألوان صفحات الكتاب
+      </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         LAST PAGE
+    ====================================================== -->
+
+    <div class="setting">
+
+      <div class="settingTitle">
+        📖 آخر صفحة قرأتها
+      </div>
+
+      <div class="settingRow">
+
+        <span id="lastPageText">
+          الصفحة 1
+        </span>
+
+        <button
+          class="actionButton"
+          id="goLastPage"
+          type="button"
+          style="
+            width:auto;
+            padding:0 18px;
+            margin:0;
+          "
+        >
+          فتح
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FAVORITES
+    ====================================================== -->
+
+    <div class="setting">
+
+      <div class="settingTitle">
+        🤍المفضلة
+      </div>
+
+      <button
+        class="actionButton"
+        id="openFavoritesFromSettings"
+        type="button"
+      >
+        عرض الصفحات المفضلة
+      </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         RESET
+    ====================================================== -->
+
+    <div class="setting">
+
+      <button
+        class="actionButton"
+        id="resetSettings"
+        type="button"
+      >
+        إعادة ضبط الإعدادات
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+<!-- =========================================================
+     RESET CONFIRM MODAL
+========================================================= -->
+
+<div
+  id="resetConfirmOverlay"
+  aria-hidden="true"
+>
+
+  <div
+    id="resetConfirmBox"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="resetConfirmTitle"
+  >
+
+    <div class="resetConfirmIcon">
+      ↻
+    </div>
+
+    <div
+      class="resetConfirmTitle"
+      id="resetConfirmTitle"
+    >
+      إعادة ضبط الإعدادات
+    </div>
+
+    <div class="resetConfirmText">
+      هل تريد إعادة جميع الإعدادات
+      إلى الوضع الافتراضي؟
+      <br>
+      سيتم إعادة الألوان والوضع الليلي.
+    </div>
+
+    <div class="resetConfirmActions">
+
+      <button
+        type="button"
+        class="resetConfirmButton resetConfirmCancel"
+        id="resetConfirmCancel"
+      >
+        إلغاء
+      </button>
+
+      <button
+        type="button"
+        class="resetConfirmButton resetConfirmYes"
+        id="resetConfirmYes"
+      >
+        إعادة الضبط
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const TOTAL_PAGES = 672;
+
+const PAGE_PATH = "pages/";
+
+const PAGE_EXTENSION = ".jpg";
+
+const MAX_ZOOM = 4;
+
+const MIN_ZOOM = 1;
+
+
+/* =========================================================
+   LOCAL STORAGE KEYS
+========================================================= */
+
+const THEME_KEY =
+  "tafseer_theme";
+
+const BG_KEY =
+  "tafseer_background";
+
+const TEXT_KEY =
+  "tafseer_text";
+
+const PRIMARY_KEY =
+  "tafseer_primary";
+
+const LAST_PAGE_KEY =
+  "tafseer_last_page";
+
+const FAVORITES_KEY =
+  "tafseer_favorites";
+
+/* ألوان صفحات الكتاب */
+
+const BOOK_PAGE_BG_KEY =
+  "tafseer_book_page_background";
+
+const BOOK_PAGE_TEXT_KEY =
+  "tafseer_book_page_text";
+
+
+/* =========================================================
+   DEFAULT VALUES
+========================================================= */
+
+const DEFAULTS = {
+
+  theme:"light",
+
+  background:"#f5f5f5",
+
+  text:"#222222",
+
+  primary:"#ffffff",
+
+  bookPageBackground:"#ffffff",
+
+  bookPageText:"#222222"
+
+};
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const root =
+  document.documentElement;
+
+const pagesScroller =
+  document.getElementById("pages");
+
+const pageIndicator =
+  document.getElementById("pageIndicator");
+
+const settingsOverlay =
+  document.getElementById("settingsOverlay");
+
+const settingsPanel =
+  document.getElementById("settingsPanel");
+
+const favoritesList =
+  document.getElementById("favoritesList");
+
+const favoritesContent =
+  document.getElementById("favoritesContent");
+
+const darkMode =
+  document.getElementById("darkMode");
+
+const themeText =
+  document.getElementById("themeText");
+
+const backgroundColor =
+  document.getElementById("backgroundColor");
+
+const textColor =
+  document.getElementById("textColor");
+
+const primaryColor =
+  document.getElementById("primaryColor");
+
+const bookPageBackgroundColor =
+  document.getElementById(
+    "bookPageBackgroundColor"
+  );
+
+const bookPageTextColor =
+  document.getElementById(
+    "bookPageTextColor"
+  );
+
+const lastPageText =
+  document.getElementById("lastPageText");
+
+const surahSelect =
+  document.getElementById("surahSelect");
+
+const pageColorMatrix =
+  document.getElementById(
+    "pageColorMatrix"
+  );
+
+
+/* =========================================================
+   SAFE LOCAL STORAGE
+========================================================= */
+
+function storageGet(
+  key,
+  fallback = null
+){
+
+  try{
+
+    const value =
+      localStorage.getItem(key);
+
+    return value === null
+      ? fallback
+      : value;
+
+  }catch(error){
+
+    console.error(
+      "Storage read error:",
+      error
+    );
+
+    return fallback;
+
+  }
+
+}
+
+
+function storageSet(
+  key,
+  value
+){
+
+  try{
+
+    localStorage.setItem(
+      key,
+      value
+    );
+
+  }catch(error){
+
+    console.error(
+      "Storage write error:",
+      error
+    );
+
+  }
+
+}
+
+
+function storageRemove(key){
+
+  try{
+
+    localStorage.removeItem(key);
+
+  }catch(error){
+
+    console.error(
+      "Storage remove error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   COLOR FUNCTIONS
+========================================================= */
+
+function normalizeHex(hex){
+
+  if(
+    typeof hex !== "string"
+  ){
+
+    return "#000000";
+
+  }
+
+  hex =
+    hex.trim();
+
+
+  if(
+    /^#[0-9a-fA-F]{6}$/.test(hex)
+  ){
+
+    return hex.toLowerCase();
+
+  }
+
+
+  if(
+    /^#[0-9a-fA-F]{3}$/.test(hex)
+  ){
+
+    return (
+      "#" +
+      hex[1] + hex[1] +
+      hex[2] + hex[2] +
+      hex[3] + hex[3]
+    ).toLowerCase();
+
+  }
+
+
+  return "#000000";
+
+}
+
+
+function hexToRGB(hex){
+
+  hex =
+    normalizeHex(hex)
+      .replace("#","");
+
+
+  return {
+
+    r:
+      parseInt(
+        hex.substring(0,2),
+        16
+      ),
+
+    g:
+      parseInt(
+        hex.substring(2,4),
+        16
+      ),
+
+    b:
+      parseInt(
+        hex.substring(4,6),
+        16
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   CREATE PAGE COLOR MATRIX
+========================================================= */
+
+/*
+  الصورة الأصلية غالبًا عبارة عن:
+  أبيض = خلفية الصفحة
+  أسود/رمادي = الكتابة
+
+  لذلك نحول درجة السطوع الأصلية إلى:
+  backgroundColor ← الأبيض
+  textColor       ← الأسود
+
+  مع الحفاظ على درجات الرمادي والتفاصيل.
+*/
+
+function createPageColorMatrix(
+  textHex,
+  backgroundHex
+) {
+
+  const text =
+    hexToRGB(textHex);
+
+  const background =
+    hexToRGB(backgroundHex);
+
+  const tr =
+    text.r / 255;
+
+  const tg =
+    text.g / 255;
+
+  const tb =
+    text.b / 255;
+
+  const br =
+    background.r / 255;
+
+  const bg =
+    background.g / 255;
+
+  const bb =
+    background.b / 255;
+
+  const dr =
+    tr - br;
+
+  const dg =
+    tg - bg;
+
+  const db =
+    tb - bb;
+
+  return [
+
+    -dr * 0.299,
+    -dr * 0.587,
+    -dr * 0.114,
+    0,
+    tr,
+
+    -dg * 0.299,
+    -dg * 0.587,
+    -dg * 0.114,
+    0,
+    tg,
+
+    -db * 0.299,
+    -db * 0.587,
+    -db * 0.114,
+    0,
+    tb,
+
+    0,
+    0,
+    0,
+    1,
+    0
+
+  ].join(" ");
+
+}
+
+/* =========================================================
+   APPLY BOOK PAGE COLORS
+========================================================= */
+
+function applyBookPageColors() {
+
+  const theme =
+    storageGet("tafseer_theme", DEFAULTS.theme);
+
+  let background =
+    storageGet(
+      BOOK_PAGE_BG_KEY,
+      DEFAULTS.bookPageBackground
+    );
+
+  let text =
+    storageGet(
+      BOOK_PAGE_TEXT_KEY,
+      DEFAULTS.bookPageText
+    );
+
+  if (theme === "dark") {
+    background = "#111111";
+    text = "#ffffff";
+  }
+
+  root.style.setProperty(
+    "--book-page-bg",
+    background
+  );
+
+  root.style.setProperty(
+    "--book-page-text",
+    text
+  );
+
+  if (pageColorMatrix) {
+
+    pageColorMatrix.setAttribute(
+      "values",
+      createPageColorMatrix(
+        text,
+        background
+      )
+    );
+  }
+
+  const isDefaultColors =
+    normalizeHex(background) ===
+    normalizeHex(DEFAULTS.bookPageBackground) &&
+    normalizeHex(text) ===
+    normalizeHex(DEFAULTS.bookPageText);
+
+  document
+    .querySelectorAll(".page img")
+    .forEach(function(img) {
+
+      if (
+        theme !== "dark" &&
+        isDefaultColors
+      ) {
+
+        img.style.filter = "none";
+
+      } else {
+
+        img.style.filter =
+          "url(#pageColorFilter)";
+      }
+
+    });
+
+  if (bookPageBackgroundColor) {
+    bookPageBackgroundColor.value =
+      normalizeHex(background);
+  }
+
+  if (bookPageTextColor) {
+    bookPageTextColor.value =
+      normalizeHex(text);
+  }
+}
+/* =========================================================
+   FAVORITES
+========================================================= */
+
+function getFavorites(){
+
+  try{
+
+    const saved =
+      storageGet(
+        FAVORITES_KEY,
+        "[]"
+      );
+
+    const parsed =
+      JSON.parse(saved);
+
+    if(!Array.isArray(parsed)){
+      return [];
+    }
+
+    return [
+      ...new Set(
+        parsed
+          .map(Number)
+          .filter(
+            page =>
+              Number.isInteger(page) &&
+              page >= 1 &&
+              page <= TOTAL_PAGES
+          )
+      )
+    ].sort(
+      (a,b) => a-b
+    );
+
+  }catch(error){
+
+    console.error(
+      "Favorites error:",
+      error
+    );
+
+    return [];
+
+  }
+
+}
+
+
+let favorites =
+  getFavorites();
+
+
+function saveFavorites(){
+
+  storageSet(
+    FAVORITES_KEY,
+    JSON.stringify(favorites)
+  );
+
+}
+
+
+/* =========================================================
+   SURAH DATA
+========================================================= */
+
+const SURAH_PAGES = {
+
+  1:28, 2:29, 3:77, 4:104, 5:133, 6:155, 7:178,
+  8:204, 9:214, 10:235, 11:248, 12:262, 13:276,
+  14:282, 15:289, 16:294, 17:309, 18:320, 19:332,
+  20:339, 21:349, 22:359, 23:369, 24:377, 25:386,
+  26:394, 27:404, 28:412, 29:423, 30:431, 31:438,
+  32:442, 33:445, 34:455, 35:461, 36:467, 37:473,
+  38:480, 39: 485, 40: 494, 41: 504, 42: 510, 43: 516,
+    44: 523, 45: 526, 46: 529, 47: 534, 48: 538, 49: 542,
+    50: 545, 51: 547, 52: 550, 53: 553, 54: 555, 55: 558,
+    56: 561, 57: 564, 58: 572, 59: 572, 60: 576, 61: 578,
+    62: 580, 63: 581, 64: 583, 65: 585, 66: 587, 67: 589,
+    68: 591, 69: 593, 70: 595, 71: 597, 72: 599, 73: 601,
+    74: 602, 75: 604, 76: 605, 77: 608, 78: 609, 79: 610,
+    80: 612, 81: 613, 82: 614, 83: 614, 84: 616, 85: 617,
+    86: 618, 87: 618, 88: 619, 89: 620, 90: 621, 91: 622,
+    92: 622, 93: 623, 94: 623, 95: 624, 96: 624, 97: 625,
+    98: 625, 99: 626, 100: 626, 101: 627, 102: 627, 103: 628,
+    104: 628, 105: 629, 106: 629, 107: 629, 108: 629, 109: 630,
+    110: 630, 111: 631, 112: 631, 113: 631, 114: 631
+
+};
+
+
+const SURAH_NAMES = {
+
+  1:"الفاتحة",
+  2:"البقرة",
+  3:"آل عمران",
+  4:"النساء",
+  5:"المائدة",
+  6:"الأنعام",
+  7:"الأعراف",
+  8:"الأنفال",
+  9:"التوبة",
+  10:"يونس",
+  11:"هود",
+  12:"يوسف",
+  13:"الرعد",
+  14:"إبراهيم",
+  15:"الحجر",
+  16:"النحل",
+  17:"الإسراء",
+  18:"الكهف",
+  19:"مريم",
+  20:"طه",
+  21:"الأنبياء",
+  22:"الحج",
+  23:"المؤمنون",
+  24:"النور",
+  25:"الفرقان",
+  26:"الشعراء",
+  27:"النمل",
+  28:"القصص",
+  29:"العنكبوت",
+  30:"الروم",
+  31:"لقمان",
+  32:"السجدة",
+  33:"الأحزاب",
+  34:"سبأ",
+  35:"فاطر",
+  36:"يس",
+  37:"الصافات",
+  38:"ص",
+  39:"الزمر",
+  40:"غافر",
+  41:"فصلت",
+  42:"الشورى",
+  43:"الزخرف",
+  44:"الدخان",
+  45:"الجاثية",
+  46:"الأحقاف",
+  47:"محمد",
+  48:"الفتح",
+  49:"الحجرات",
+  50:"ق",
+  51:"الذاريات",
+  52:"الطور",
+  53:"النجم",
+  54:"القمر",
+  55:"الرحمن",
+  56:"الواقعة",
+  57:"الحديد",
+  58:"المجادلة",
+  59:"الحشر",
+  60:"الممتحنة",
+  61:"الصف",
+  62:"الجمعة",
+  63:"المنافقون",
+  64:"التغابن",
+  65:"الطلاق",
+  66:"التحريم",
+  67:"الملك",
+  68:"القلم",
+  69:"الحاقة",
+  70:"المعارج",
+  71:"نوح",
+  72:"الجن",
+  73:"المزمل",
+  74:"المدثر",
+  75:"القيامة",
+  76:"الإنسان",
+  77:"المرسلات",
+  78:"النبأ",
+  79:"النازعات",
+  80:"عبس",
+  81:"التكوير",
+  82:"الانفطار",
+  83:"المطففين",
+  84:"الانشقاق",
+  85:"البروج",
+  86:"الطارق",
+  87:"الأعلى",
+  88:"الغاشية",
+  89:"الفجر",
+  90:"البلد",
+  91:"الشمس",
+  92:"الليل",
+  93:"الضحى",
+  94:"الشرح",
+  95:"التين",
+  96:"العلق",
+  97:"القدر",
+  98:"البينة",
+  99:"الزلزلة",
+  100:"العاديات",
+  101:"القارعة",
+  102:"التكاثر",
+  103:"العصر",
+  104:"الهمزة",
+  105:"الفيل",
+  106:"قريش",
+  107:"الماعون",
+  108:"الكوثر",
+  109:"الكافرون",
+  110:"النصر",
+  111:"المسد",
+  112:"الإخلاص",
+  113:"الفلق",
+  114:"الناس"
+
+};
+
+
+/* =========================================================
+   SURAH NAME BY PAGE
+========================================================= */
+
+function getSurahNameByPage(pageNumber){
+
+  let current =
+    "غير محدد";
+
+  for(
+    const number of Object.keys(SURAH_PAGES)
+  ){
+
+    const start =
+      SURAH_PAGES[number];
+
+    if(pageNumber >= start){
+
+      current =
+        SURAH_NAMES[number] ||
+        `سورة ${number}`;
+
+    }else{
+
+      break;
+
+    }
+
+  }
+
+  return current;
+}
+
+
+/* =========================================================
+   CREATE ALL PAGES
+========================================================= */
+
+function createAllPages(){
+
+  const fragment =
+    document.createDocumentFragment();
+
+  for(
+    let pageNumber = 1;
+    pageNumber <= TOTAL_PAGES;
+    pageNumber++
+  ){
+
+    const number =
+      String(pageNumber)
+        .padStart(4,"0");
+
+
+    const page =
+      document.createElement("section");
+
+    page.className =
+      "page";
+
+    page.dataset.page =
+      String(pageNumber);
+
+
+    const pageNumberElement =
+      document.createElement("div");
+
+    pageNumberElement.className =
+      "pageNumber";
+
+    pageNumberElement.textContent =
+      pageNumber;
+
+
+    const favoriteButton =
+      document.createElement("button");
+
+    favoriteButton.className =
+      "favoriteButton";
+
+    favoriteButton.type =
+      "button";
+
+    favoriteButton.setAttribute(
+      "aria-label",
+      `إضافة الصفحة ${pageNumber} إلى المفضلة`
+    );
+
+
+    updateFavoriteButton(
+      favoriteButton,
+      pageNumber
+    );
+
+
+    favoriteButton.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        toggleFavorite(
+          pageNumber,
+          favoriteButton
+        );
+
+      }
+    );
+
+
+    const img =
+      document.createElement("img");
+
+    img.src =
+      `${PAGE_PATH}${number}${PAGE_EXTENSION}`;
+
+    img.alt =
+      `الصفحة ${pageNumber}`;
+
+    img.draggable =
+      false;
+
+    img.loading =
+      pageNumber <= 2
+        ? "eager"
+        : "lazy";
+
+    img.decoding =
+      "async";
+
+
+    img.addEventListener(
+      "error",
+      () => {
+
+        console.error(
+          `تعذر تحميل الصفحة ${pageNumber}`
+        );
+
+      },
+      {
+        once:true
+      }
+    );
+
+
+    page.appendChild(
+      pageNumberElement
+    );
+
+    page.appendChild(
+      favoriteButton
+    );
+
+    page.appendChild(
+      img
+    );
+
+    fragment.appendChild(
+      page
+    );
+
+  }
+
+
+  pagesScroller.appendChild(
+    fragment
+  );
+
+
+  pagesScroller
+    .querySelectorAll(".page")
+    .forEach(
+      page => {
+
+        const img =
+          page.querySelector("img");
+
+        enableZoom(
+          page,
+          img
+        );
+
+      }
+    );
+
+
+  applyBookPageColors();
+
+}
+
+
+/* =========================================================
+   FAVORITE BUTTON
+========================================================= */
+
+function updateFavoriteButton(
+  button,
+  pageNumber
+){
+
+  const active =
+    favorites.includes(pageNumber);
+
+  button.textContent =
+    active
+      ? "🤍"
+      : "♡";
+
+  button.classList.toggle(
+    "active",
+    active
+  );
+
+}
+
+
+/* =========================================================
+   TOGGLE FAVORITE
+========================================================= */
+
+function toggleFavorite(
+  pageNumber,
+  button
+){
+
+  if(
+    favorites.includes(pageNumber)
+  ){
+
+    favorites =
+      favorites.filter(
+        page =>
+          page !== pageNumber
+      );
+
+  }else{
+
+    favorites.push(
+      pageNumber
+    );
+
+    favorites.sort(
+      (a,b) => a-b
+    );
+
+  }
+
+
+  saveFavorites();
+
+  updateFavoriteButton(
+    button,
+    pageNumber
+  );
+
+  renderFavorites();
+
+}
+
+
+/* =========================================================
+   RENDER FAVORITES
+========================================================= */
+
+function renderFavorites(){
+
+  favorites =
+    getFavorites();
+
+  favoritesContent.innerHTML =
+    "";
+
+
+  if(
+    favorites.length === 0
+  ){
+
+    favoritesContent.innerHTML = `
+      <div class="emptyMessage">
+        لا توجد صفحات مفضلة بعد
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  favorites.forEach(
+    pageNumber => {
+
+      const item =
+        document.createElement("button");
+
+      item.type =
+        "button";
+
+      item.className =
+        "favoriteItem";
+
+
+      const surahName =
+        getSurahNameByPage(
+          pageNumber
+        );
+
+
+      item.innerHTML = `
+
+        <div
+          style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+          "
+        >
+
+          <span>
+            🤍 ${surahName}
+          </span>
+
+          <span
+            style="
+              font-size:12px;
+              opacity:.55;
+              font-weight:400;
+              white-space:nowrap;
+            "
+          >
+            الصفحة ${pageNumber}
+          </span>
+
+        </div>
+
+      `;
+
+
+      item.addEventListener(
+        "click",
+        () => {
+
+          closeFavorites();
+
+          goToPage(
+            pageNumber
+          );
+
+        }
+      );
+
+
+      favoritesContent.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   GO TO PAGE
+========================================================= */
+
+function goToPage(
+  pageNumber,
+  save = true
+){
+
+  pageNumber =
+    Number(pageNumber);
+
+
+  if(
+    !Number.isFinite(pageNumber)
+  ){
+
+    pageNumber = 1;
+
+  }
+
+
+  pageNumber =
+    Math.max(
+      1,
+      Math.min(
+        TOTAL_PAGES,
+        Math.round(pageNumber)
+      )
+    );
+
+
+  const width =
+    pagesScroller.clientWidth;
+
+
+  if(!width){
+
+    return;
+
+  }
+
+
+  currentPage =
+    pageNumber;
+
+
+  pagesScroller.scrollTo({
+
+    left:
+      (pageNumber - 1) *
+      width,
+
+    behavior:"smooth"
+
+  });
+
+
+  updatePageIndicator(
+    pageNumber
+  );
+
+
+  if(save){
+
+    saveLastPage(
+      pageNumber
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LAST PAGE
+========================================================= */
+
+function saveLastPage(
+  pageNumber
+){
+
+  pageNumber =
+    Math.max(
+      1,
+      Math.min(
+        TOTAL_PAGES,
+        Number(pageNumber) || 1
+      )
+    );
+
+
+  storageSet(
+    LAST_PAGE_KEY,
+    String(pageNumber)
+  );
+
+
+  lastPageText.textContent =
+    `الصفحة ${pageNumber}`;
+
+}
+
+
+function getLastPage(){
+
+  const saved =
+    Number(
+      storageGet(
+        LAST_PAGE_KEY,
+        "1"
+      )
+    );
+
+
+  if(
+    !Number.isFinite(saved)
+  ){
+
+    return 1;
+
+  }
+
+
+  return Math.max(
+    1,
+    Math.min(
+      TOTAL_PAGES,
+      Math.round(saved)
+    )
+  );
+
+}
+
+
+/* =========================================================
+   CURRENT PAGE
+========================================================= */
+
+let currentPage =
+  1;
+
+let scrollTimer =
+  null;
+
+let indicatorTimer =
+  null;
+
+
+function updatePageIndicator(
+  pageNumber
+){
+
+  pageIndicator.textContent =
+    `الصفحة ${pageNumber} / ${TOTAL_PAGES}`;
+
+}
+
+
+function showPageIndicator(){
+
+  pageIndicator.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    indicatorTimer
+  );
+
+  indicatorTimer =
+    setTimeout(
+      () => {
+
+        pageIndicator.classList.remove(
+          "show"
+        );
+
+      },
+      1200
+    );
+
+}
+
+
+pagesScroller.addEventListener(
+  "scroll",
+  () => {
+
+    clearTimeout(
+      scrollTimer
+    );
+
+
+    showPageIndicator();
+
+
+    scrollTimer =
+      setTimeout(
+        () => {
+
+          const width =
+            pagesScroller.clientWidth;
+
+
+          if(!width){
+
+            return;
+
+          }
+
+
+          let pageNumber =
+            Math.round(
+              pagesScroller.scrollLeft /
+              width
+            ) + 1;
+
+
+          pageNumber =
+            Math.max(
+              1,
+              Math.min(
+                TOTAL_PAGES,
+                pageNumber
+              )
+            );
+
+
+          currentPage =
+            pageNumber;
+
+
+          updatePageIndicator(
+            pageNumber
+          );
+
+
+          saveLastPage(
+            pageNumber
+          );
+
+
+          prepareNearbyImages(
+            pageNumber
+          );
+
+        },
+        100
+      );
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+/* =========================================================
+   PRELOAD NEARBY PAGES
+========================================================= */
+
+function prepareNearbyImages(pageNumber){
+
+  const start =
+    Math.max(1, pageNumber - 2);
+
+  const end =
+    Math.min(
+      TOTAL_PAGES,
+      pageNumber + 2
+    );
+
+  const theme =
+    storageGet(
+      "tafseer_theme",
+      DEFAULTS.theme
+    );
+
+  let background =
+    storageGet(
+      BOOK_PAGE_BG_KEY,
+      DEFAULTS.bookPageBackground
+    );
+
+  let text =
+    storageGet(
+      BOOK_PAGE_TEXT_KEY,
+      DEFAULTS.bookPageText
+    );
+
+  if (theme === "dark") {
+
+    background = "#181818";
+    text = "#f5f5f5";
+
+  }
+
+  const isDefaultColors =
+    normalizeHex(background) ===
+      normalizeHex(DEFAULTS.bookPageBackground) &&
+    normalizeHex(text) ===
+      normalizeHex(DEFAULTS.bookPageText);
+
+  for (
+    let number = start;
+    number <= end;
+    number++
+  ) {
+
+    const page =
+      pagesScroller.querySelector(
+        `.page[data-page="${number}"]`
+      );
+
+    if (!page) continue;
+
+    const img =
+      page.querySelector("img");
+
+    if (!img) continue;
+
+    if (
+      img.dataset.prepared !== "true"
+    ) {
+
+      img.loading = "eager";
+
+      img.dataset.prepared =
+        "true";
+    }
+
+    if (
+      theme !== "dark" &&
+      isDefaultColors
+    ) {
+
+      img.style.filter = "none";
+
+    } else {
+
+      img.style.filter =
+        "url(#pageColorFilter)";
+    }
+  }
+}
+/* =========================================================
+   THEME
+========================================================= */
+
+function applyTheme(){
+
+  const theme =
+    storageGet(
+      THEME_KEY,
+      DEFAULTS.theme
+    );
+
+
+  const isDark =
+    theme === "dark";
+
+
+  darkMode.checked =
+    isDark;
+
+
+  themeText.textContent =
+    isDark
+      ? "الوضع الليلي"
+      : "الوضع الفاتح";
+
+
+  document.body.classList.toggle(
+    "dark",
+    isDark
+  );
+
+
+  if(isDark){
+
+    root.style.setProperty(
+      "--bg",
+      "#121212"
+    );
+
+    root.style.setProperty(
+      "--card",
+      "#1e1e1e"
+    );
+
+    root.style.setProperty(
+      "--header",
+      "#1b1b1b"
+    );
+
+    root.style.setProperty(
+      "--text",
+      "#f2f2f2"
+    );
+
+    root.style.setProperty(
+      "--border",
+      "#333333"
+    );
+
+  }else{
+
+    const bg =
+      storageGet(
+        BG_KEY,
+        DEFAULTS.background
+      );
+
+    const text =
+      storageGet(
+        TEXT_KEY,
+        DEFAULTS.text
+      );
+
+
+    root.style.setProperty(
+      "--bg",
+      bg
+    );
+
+    root.style.setProperty(
+      "--card",
+      bg
+    );
+
+    root.style.setProperty(
+      "--header",
+      bg
+    );
+
+    root.style.setProperty(
+      "--text",
+      text
+    );
+
+    root.style.setProperty(
+      "--border",
+      "#e5e5e5"
+    );
+
+  }
+
+
+  /* =========================================================
+     PRIMARY COLOR
+  ========================================================= */
+  
+  const primary =
+    isDark ?
+    "#000000" :
+    "#ffffff";
+  
+  
+  root.style.setProperty(
+    "--primary",
+    primary
+  );
+  
+  root.style.setProperty(
+    "--favorite",
+    primary
+  );
+  
+  
+  /*
+    المنطقة خارج صفحات الكتاب
+    تتبع اللون الرئيسي:
+    أبيض في الوضع الفاتح
+    أسود في الوضع الليلي
+  */
+  
+  root.style.setProperty(
+    "--page-bg",
+    primary
+  );
+
+  backgroundColor.value =
+    storageGet(
+      BG_KEY,
+      DEFAULTS.background
+    );
+
+
+  textColor.value =
+    storageGet(
+      TEXT_KEY,
+      DEFAULTS.text
+    );
+
+
+  primaryColor.value =
+    primary;
+
+
+  applyBookPageColors();
+
+}
+
+
+/* =========================================================
+   DARK MODE EVENT
+========================================================= */
+
+darkMode.addEventListener(
+  "change",
+  function(){
+
+    storageSet(
+      THEME_KEY,
+      this.checked
+        ? "dark"
+        : "light"
+    );
+
+
+    applyTheme();
+
+  }
+);
+
+
+/* =========================================================
+   APP BACKGROUND COLOR
+========================================================= */
+
+backgroundColor.addEventListener(
+  "input",
+  function(){
+
+    storageSet(
+      BG_KEY,
+      this.value
+    );
+
+
+    if(
+      storageGet(
+        THEME_KEY,
+        DEFAULTS.theme
+      ) !== "dark"
+    ){
+
+      root.style.setProperty(
+        "--bg",
+        this.value
+      );
+
+      root.style.setProperty(
+        "--card",
+        this.value
+      );
+
+      root.style.setProperty(
+        "--header",
+        this.value
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   APP TEXT COLOR
+========================================================= */
+
+textColor.addEventListener(
+  "input",
+  function(){
+
+    storageSet(
+      TEXT_KEY,
+      this.value
+    );
+
+
+    if(
+      storageGet(
+        THEME_KEY,
+        DEFAULTS.theme
+      ) !== "dark"
+    ){
+
+      root.style.setProperty(
+        "--text",
+        this.value
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   PRIMARY COLOR
+   يتحكم في المنطقة خارج صفحات الكتاب
+========================================================= */
+
+primaryColor.addEventListener(
+  "input",
+  function(){
+
+    storageSet(
+      PRIMARY_KEY,
+      this.value
+    );
+
+
+    root.style.setProperty(
+      "--primary",
+      this.value
+    );
+
+    root.style.setProperty(
+      "--favorite",
+      this.value
+    );
+
+    root.style.setProperty(
+      "--page-bg",
+      this.value
+    );
+
+  }
+);
+
+
+/* =========================================================
+   BOOK PAGE BACKGROUND COLOR
+========================================================= */
+
+if (bookPageBackgroundColor) {
+
+  bookPageBackgroundColor.addEventListener(
+    "input",
+    function() {
+
+      storageSet(
+        BOOK_PAGE_BG_KEY,
+        this.value
+      );
+
+      root.style.setProperty(
+        "--book-page-bg",
+        this.value
+      );
+
+      applyBookPageColors();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   BOOK PAGE TEXT COLOR
+========================================================= */
+
+if (bookPageTextColor) {
+
+  bookPageTextColor.addEventListener(
+    "input",
+    function() {
+
+      storageSet(
+        BOOK_PAGE_TEXT_KEY,
+        this.value
+      );
+
+      root.style.setProperty(
+        "--book-page-text",
+        this.value
+      );
+
+      applyBookPageColors();
+
+    }
+  );
+
+}
+
+/* =========================================================
+   RESET BOOK PAGE COLORS
+========================================================= */
+
+const resetBookPageColors =
+  document.getElementById(
+    "resetBookPageColors"
+  );
+
+
+if (resetBookPageColors) {
+
+  resetBookPageColors.addEventListener(
+    "click",
+    function() {
+
+      storageRemove(
+        BOOK_PAGE_BG_KEY
+      );
+
+      storageRemove(
+        BOOK_PAGE_TEXT_KEY
+      );
+
+
+      const defaultBackground =
+        DEFAULTS.bookPageBackground;
+
+      const defaultText =
+        DEFAULTS.bookPageText;
+
+
+      root.style.setProperty(
+        "--book-page-bg",
+        defaultBackground
+      );
+
+      root.style.setProperty(
+        "--book-page-text",
+        defaultText
+      );
+
+
+      const matrix =
+        createPageColorMatrix(
+          defaultText,
+          defaultBackground
+        );
+
+
+      if (pageColorMatrix) {
+
+        pageColorMatrix.setAttribute(
+          "values",
+          matrix
+        );
+
+      }
+
+
+      if (bookPageBackgroundColor) {
+
+        bookPageBackgroundColor.value =
+          defaultBackground;
+
+      }
+
+
+      if (bookPageTextColor) {
+
+        bookPageTextColor.value =
+          defaultText;
+
+      }
+
+
+      document
+        .querySelectorAll(
+          ".page img"
+        )
+        .forEach(
+          function(img) {
+
+            img.style.filter ="none";
+
+          }
+        );
+
+    }
+  );
+
+}
+
+/* =========================================================
+   SETTINGS OPEN
+========================================================= */
+
+document
+  .getElementById(
+    "settingsButton"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      settingsOverlay.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   SETTINGS CLOSE
+========================================================= */
+
+function closeSettings(){
+
+  settingsOverlay.classList.remove(
+    "show"
+  );
+
+}
+
+
+document
+  .getElementById(
+    "closeSettings"
+  )
+  .addEventListener(
+    "click",
+    closeSettings
+  );
+
+
+settingsOverlay.addEventListener(
+  "click",
+  event => {
+
+    if(
+      event.target ===
+      settingsOverlay
+    ){
+
+      closeSettings();
+
+    }
+
+  }
+);
+
+
+settingsPanel.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+  }
+);
+
+
+/* =========================================================
+   FAVORITES OPEN
+========================================================= */
+
+document
+  .getElementById(
+    "favoritesButton"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      renderFavorites();
+
+      favoritesList.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   FAVORITES CLOSE
+========================================================= */
+
+function closeFavorites(){
+
+  favoritesList.classList.remove(
+    "show"
+  );
+
+}
+
+
+document
+  .getElementById(
+    "closeFavorites"
+  )
+  .addEventListener(
+    "click",
+    closeFavorites
+  );
+
+
+/* =========================================================
+   FAVORITES FROM SETTINGS
+========================================================= */
+
+document
+  .getElementById(
+    "openFavoritesFromSettings"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      closeSettings();
+
+      setTimeout(
+        () => {
+
+          renderFavorites();
+
+          favoritesList.classList.add(
+            "show"
+          );
+
+        },
+        180
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   LAST PAGE BUTTON
+========================================================= */
+
+document
+  .getElementById(
+    "goLastPage"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      const page =
+        getLastPage();
+
+
+      closeSettings();
+
+
+      setTimeout(
+        () => {
+
+          goToPage(
+            page
+          );
+
+        },
+        180
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   SURAH SELECT
+========================================================= */
+
+surahSelect.addEventListener(
+  "change",
+  function(){
+
+    const surahNumber =
+      Number(
+        this.value
+      );
+
+
+    if(!surahNumber){
+
+      return;
+
+    }
+
+
+    const pageNumber =
+      SURAH_PAGES[
+        surahNumber
+      ];
+
+
+    if(
+      !Number.isFinite(pageNumber)
+    ){
+
+      return;
+
+    }
+
+
+    closeSettings();
+
+
+    setTimeout(
+      () => {
+
+        goToPage(
+          pageNumber
+        );
+
+      },
+      180
+    );
+
+
+    this.value = "";
+
+  }
+);
+
+
+/* =========================================================
+   CUSTOM RESET CONFIRM MODAL
+========================================================= */
+
+const resetSettings =
+  document.getElementById(
+    "resetSettings"
+  );
+
+const resetConfirmOverlay =
+  document.getElementById(
+    "resetConfirmOverlay"
+  );
+
+const resetConfirmCancel =
+  document.getElementById(
+    "resetConfirmCancel"
+  );
+
+const resetConfirmYes =
+  document.getElementById(
+    "resetConfirmYes"
+  );
+
+
+/* =========================================================
+   OPEN RESET CONFIRM
+========================================================= */
+
+function openResetConfirm(){
+
+  resetConfirmOverlay.classList.add(
+    "show"
+  );
+
+  resetConfirmOverlay.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+
+
+/* =========================================================
+   CLOSE RESET CONFIRM
+========================================================= */
+
+function closeResetConfirm(){
+
+  resetConfirmOverlay.classList.remove(
+    "show"
+  );
+
+  resetConfirmOverlay.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+}
+
+
+/* =========================================================
+   RESET BUTTON
+========================================================= */
+
+resetSettings.addEventListener(
+  "click",
+  openResetConfirm
+);
+
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+resetConfirmCancel.addEventListener(
+  "click",
+  closeResetConfirm
+);
+
+
+/* =========================================================
+   CONFIRM RESET
+========================================================= */
+
+resetConfirmYes.addEventListener(
+  "click",
+  () => {
+
+    storageRemove(
+      THEME_KEY
+    );
+
+    storageRemove(
+      BG_KEY
+    );
+
+    storageRemove(
+      TEXT_KEY
+    );
+
+    storageRemove(
+      PRIMARY_KEY
+    );
+
+    storageRemove(
+      BOOK_PAGE_BG_KEY
+    );
+
+    storageRemove(
+      BOOK_PAGE_TEXT_KEY
+    );
+
+    closeResetConfirm();
+
+    setTimeout(
+      () => {
+
+        location.reload();
+
+      },
+      180
+    );
+
+  }
+);
+
+
+/* =========================================================
+   CLOSE BY CLICKING OUTSIDE
+========================================================= */
+
+resetConfirmOverlay.addEventListener(
+  "click",
+  event => {
+
+    if(
+      event.target ===
+      resetConfirmOverlay
+    ){
+
+      closeResetConfirm();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Escape" &&
+      resetConfirmOverlay.classList.contains(
+        "show"
+      )
+    ){
+
+      closeResetConfirm();
+
+    }
+
+  }
+);
+
+/* =========================================================
+   ZOOM + PAN
+========================================================= */
+
+function enableZoom(
+  page,
+  img
+){
+
+  let scale =
+    1;
+
+  let translateX =
+    0;
+
+  let translateY =
+    0;
+
+  let startX =
+    0;
+
+  let startY =
+    0;
+
+  let startTranslateX =
+    0;
+
+  let startTranslateY =
+    0;
+
+  let dragging =
+    false;
+
+  let pinchDistance =
+    0;
+
+  let pinchStartScale =
+    1;
+
+
+  function update(){
+
+    img.style.transform =
+      `
+        translate3d(
+          ${translateX}px,
+          ${translateY}px,
+          0
+        )
+        scale(${scale})
+      `;
+
+
+    page.classList.toggle(
+      "zoomed",
+      scale > 1.01
+    );
+
+
+    if(
+      scale <= 1.01
+    ){
+
+      scale =
+        1;
+
+      translateX =
+        0;
+
+      translateY =
+        0;
+
+      img.style.transform =
+        "translate3d(0,0,0) scale(1)";
+
+      page.classList.remove(
+        "zoomed"
+      );
+
+    }
+
+  }
+
+
+  function distance(
+    first,
+    second
+  ){
+
+    const dx =
+      first.clientX -
+      second.clientX;
+
+    const dy =
+      first.clientY -
+      second.clientY;
+
+
+    return Math.hypot(
+      dx,
+      dy
+    );
+
+  }
+
+
+  function resetZoom(){
+
+    scale =
+      1;
+
+    translateX =
+      0;
+
+    translateY =
+      0;
+
+    update();
+
+  }
+
+
+  page.addEventListener(
+    "touchstart",
+    event => {
+
+      if(
+        event.touches.length === 2
+      ){
+
+        dragging =
+          false;
+
+        pinchDistance =
+          distance(
+            event.touches[0],
+            event.touches[1]
+          );
+
+        pinchStartScale =
+          scale;
+
+        event.preventDefault();
+
+        return;
+
+      }
+
+
+      if(
+        event.touches.length === 1 &&
+        scale > 1.01
+      ){
+
+        dragging =
+          true;
+
+        startX =
+          event.touches[0].clientX;
+
+        startY =
+          event.touches[0].clientY;
+
+        startTranslateX =
+          translateX;
+
+        startTranslateY =
+          translateY;
+
+        event.preventDefault();
+
+      }
+
+    },
+    {
+      passive:false
+    }
+  );
+
+
+  page.addEventListener(
+    "touchmove",
+    event => {
+
+      if(
+        event.touches.length === 2
+      ){
+
+        event.preventDefault();
+
+
+        if(
+          !pinchDistance
+        ){
+
+          return;
+
+        }
+
+
+        const currentDistance =
+          distance(
+            event.touches[0],
+            event.touches[1]
+          );
+
+
+        const ratio =
+          currentDistance /
+          pinchDistance;
+
+
+        scale =
+          pinchStartScale *
+          ratio;
+
+
+        scale =
+          Math.max(
+            MIN_ZOOM,
+            Math.min(
+              MAX_ZOOM,
+              scale
+            )
+          );
+
+
+        update();
+
+        return;
+
+      }
+
+
+      if(
+        event.touches.length === 1 &&
+        dragging &&
+        scale > 1.01
+      ){
+
+        event.preventDefault();
+
+
+        const currentX =
+          event.touches[0].clientX;
+
+        const currentY =
+          event.touches[0].clientY;
+
+
+        translateX =
+          startTranslateX +
+          (
+            currentX -
+            startX
+          );
+
+
+        translateY =
+          startTranslateY +
+          (
+            currentY -
+            startY
+          );
+
+
+        update();
+
+      }
+
+    },
+    {
+      passive:false
+    }
+  );
+
+
+  page.addEventListener(
+    "touchend",
+    event => {
+
+      if(
+        event.touches.length === 0
+      ){
+
+        dragging =
+          false;
+
+        pinchDistance =
+          0;
+
+
+        if(
+          scale < 1.05
+        ){
+
+          resetZoom();
+
+        }
+
+
+        return;
+
+      }
+
+
+      if(
+        event.touches.length === 1 &&
+        scale > 1.01
+      ){
+
+        startX =
+          event.touches[0].clientX;
+
+        startY =
+          event.touches[0].clientY;
+
+        startTranslateX =
+          translateX;
+
+        startTranslateY =
+          translateY;
+
+        dragging =
+          true;
+
+      }
+
+    },
+    {
+      passive:false
+    }
+  );
+
+
+  page.addEventListener(
+    "touchcancel",
+    () => {
+
+      dragging =
+        false;
+
+      pinchDistance =
+        0;
+
+    },
+    {
+      passive:true
+    }
+  );
+
+
+  page.addEventListener(
+    "dblclick",
+    event => {
+
+      event.preventDefault();
+
+      if(
+        scale > 1.01
+      ){
+
+        resetZoom();
+
+      }else{
+
+        scale =
+          2;
+
+        update();
+
+      }
+
+    }
+  );
+
+
+  page.addEventListener(
+    "contextmenu",
+    event => {
+
+      event.preventDefault();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   KEYBOARD NAVIGATION
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.target.tagName === "SELECT"
+    ){
+
+      return;
+
+    }
+
+
+    if(
+      event.key === "ArrowLeft"
+    ){
+
+      goToPage(
+        currentPage + 1
+      );
+
+    }
+
+
+    if(
+      event.key === "ArrowRight"
+    ){
+
+      goToPage(
+        currentPage - 1
+      );
+
+    }
+
+
+    if(
+      event.key === "Escape"
+    ){
+
+      closeSettings();
+
+      closeFavorites();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+let resizeTimer =
+  null;
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    clearTimeout(
+      resizeTimer
+    );
+
+
+    resizeTimer =
+      setTimeout(
+        () => {
+
+          goToPage(
+            currentPage,
+            false
+          );
+
+        },
+        120
+      );
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+/* =========================================================
+   CAPACITOR BACK BUTTON
+========================================================= */
+
+async function setupCapacitorBackButton(){
+
+  try{
+
+    const module =
+      await import(
+        "@capacitor/app"
+      );
+
+
+    if(
+      !module ||
+      !module.App ||
+      typeof module.App.addListener !== "function"
+    ){
+
+      return;
+
+    }
+
+
+    await module.App.addListener(
+      "backButton",
+      ({canGoBack}) => {
+
+        if(
+          favoritesList.classList.contains(
+            "show"
+          )
+        ){
+
+          closeFavorites();
+
+          return;
+
+        }
+
+
+        if(
+          settingsOverlay.classList.contains(
+            "show"
+          )
+        ){
+
+          closeSettings();
+
+          return;
+
+        }
+
+
+        const current =
+          pagesScroller.querySelector(
+            `.page[data-page="${currentPage}"]`
+          );
+
+
+        if(current){
+
+          const image =
+            current.querySelector("img");
+
+
+          if(
+            image &&
+            image.style.transform &&
+            image.style.transform !==
+            "translate3d(0px, 0px, 0) scale(1)"
+          ){
+
+            image.style.transform =
+              "translate3d(0,0,0) scale(1)";
+
+            current.classList.remove(
+              "zoomed"
+            );
+
+            return;
+
+          }
+
+        }
+
+
+        if(canGoBack){
+
+          window.history.back();
+
+        }else{
+
+          const exit =
+            confirm(
+              "هل تريد الخروج من التطبيق؟"
+            );
+
+
+          if(exit){
+
+            module.App.exitApp();
+
+          }
+
+        }
+
+      }
+    );
+
+  }catch(error){
+
+    console.log(
+      "Capacitor App plugin غير متاح في المتصفح."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RESTORE LAST PAGE
+========================================================= */
+
+function restoreLastPage(){
+
+  const page =
+    getLastPage();
+
+
+  currentPage =
+    page;
+
+
+  lastPageText.textContent =
+    `الصفحة ${page}`;
+
+
+  updatePageIndicator(
+    page
+  );
+
+
+  requestAnimationFrame(
+    () => {
+
+      requestAnimationFrame(
+        () => {
+
+          const width =
+            pagesScroller.clientWidth;
+
+
+          if(!width){
+
+            return;
+
+          }
+
+
+          pagesScroller.scrollTo({
+
+            left:
+              (page - 1) *
+              width,
+
+            behavior:"auto"
+
+          });
+
+
+          prepareNearbyImages(
+            page
+          );
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+
+
+
+
+
+/* =========================================================
+   SURAH MENU
+========================================================= */
+
+const surahsOverlay =
+  document.getElementById(
+    "surahsOverlay"
+  );
+
+const surahsList =
+  document.getElementById(
+    "surahsList"
+  );
+
+const surahsButton =
+  document.getElementById(
+    "surahsButton"
+  );
+
+const closeSurahsButton =
+  document.getElementById(
+    "closeSurahs"
+  );
+
+
+/* =========================================================
+   CREATE SURAH LIST 1 → 114
+========================================================= */
+
+function createSurahsList(){
+
+  surahsList.innerHTML = "";
+
+
+  for(
+    let number = 1;
+    number <= 114;
+    number++
+  ){
+
+    const item =
+      document.createElement("button");
+
+    item.type =
+      "button";
+
+    item.className =
+      "surahItem";
+
+
+    const page =
+      SURAH_PAGES[number];
+
+
+    const name =
+      SURAH_NAMES[number] ||
+      `سورة ${number}`;
+
+
+    item.innerHTML = `
+
+      <span class="surahNumber">
+        ${number}
+      </span>
+
+      <span class="surahName">
+        ${name}
+      </span>
+
+      <span class="surahArrow">
+        ‹
+      </span>
+
+    `;
+
+
+    item.setAttribute(
+      "aria-label",
+      `السورة رقم ${number}: ${name}`
+    );
+
+
+    item.addEventListener(
+      "click",
+      () => {
+
+        closeSurahs();
+
+        setTimeout(
+          () => {
+
+            goToPage(page);
+
+          },
+          180
+        );
+
+      }
+    );
+
+
+    surahsList.appendChild(item);
+
+  }
+
+}
+
+
+/* =========================================================
+   OPEN SURAH MENU
+========================================================= */
+
+function openSurahs(){
+
+  createSurahsList();
+
+  surahsOverlay.classList.add(
+    "show"
+  );
+
+}
+
+
+/* =========================================================
+   CLOSE SURAH MENU
+========================================================= */
+
+function closeSurahs(){
+
+  surahsOverlay.classList.remove(
+    "show"
+  );
+
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+surahsButton.addEventListener(
+  "click",
+  openSurahs
+);
+
+
+closeSurahsButton.addEventListener(
+  "click",
+  closeSurahs
+);
+
+
+surahsOverlay.addEventListener(
+  "click",
+  event => {
+
+    if(
+      event.target ===
+      surahsOverlay
+    ){
+
+      closeSurahs();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Escape"
+    ){
+
+      closeSurahs();
+
+    }
+
+  }
+);
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+function init(){
+
+  createAllPages();
+
+  applyTheme();
+
+  applyBookPageColors();
+
+  renderFavorites();
+
+  restoreLastPage();
+
+  prepareNearbyImages(
+    getLastPage()
+  );
+
+  setupCapacitorBackButton();
+
+}
+
+
+if(
+  document.readyState === "loading"
+){
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    init,
+    {
+      once:true
+    }
+  );
+
+}else{
+
+  init();
+
+}
+
+</script>
+
+</body>
+
+</html>
