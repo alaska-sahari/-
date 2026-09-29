@@ -1,0 +1,8 @@
+{
+  "appId": "com.tefsir.coran",
+  "appName": "تفسير القرآن الكريم",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  }
+}
