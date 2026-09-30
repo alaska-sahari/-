@@ -41,7 +41,7 @@ body{
 
   --text:#222222;
 
-  --primary:#7c5cff;
+  --primary:#ffffff;
 
   --border:#e5e5e5;
 
@@ -1802,6 +1802,77 @@ body.dark .surahsHeader{
   }
 
 }
+
+
+/* =========================================================
+   SURAH SEARCH
+========================================================= */
+
+#surahSearch{
+
+  width:100%;
+
+  height:46px;
+
+  margin-bottom:10px;
+
+  padding:
+    0
+    14px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:13px;
+
+  background:
+    var(--bg);
+
+  color:
+    var(--text);
+
+  font-family:
+    Arial,
+    Tahoma,
+    sans-serif;
+
+  font-size:14px;
+
+  text-align:right;
+
+  outline:none;
+
+  transition:
+    border-color .2s,
+    box-shadow .2s;
+}
+
+#surahSearch::placeholder{
+
+  color:var(--text);
+
+  opacity:.5;
+
+}
+
+#surahSearch:focus{
+
+  border-color:
+    var(--primary);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(124,92,255,.12);
+
+}
+
+body.dark #surahSearch{
+
+  background:#202020;
+
+  color:#fff;
+
+}
 </style>
 
 </head>
@@ -1885,18 +1956,15 @@ body.dark .surahsHeader{
 
 </header>
 
-
-<!-- أضف هذا مباشرة بعد header -->
+<!-- =========================================================
+     SURAH MENU
+========================================================= -->
 
 <div id="surahsOverlay">
 
   <div id="surahsPanel">
 
     <div class="surahsHeader">
-
-      <strong>
-        📖 سور القرآن الكريم
-      </strong>
 
       <button
         class="closeButton"
@@ -1907,14 +1975,31 @@ body.dark .surahsHeader{
         ✕
       </button>
 
+      <strong>
+        📖 السور
+      </strong>
+
+      <div style="width:40px"></div>
+
     </div>
 
-    <div id="surahsList"></div>
+    <div id="surahsList">
+
+      <input
+        type="search"
+        id="surahSearch"
+        placeholder="🔍 ابحث عن سورة..."
+        autocomplete="off"
+        enterkeyhint="search"
+      >
+
+      <div id="surahsItems"></div>
+
+    </div>
 
   </div>
 
 </div>
-
 <!-- =========================================================
      BOOK
 ========================================================= -->
@@ -2413,7 +2498,7 @@ body.dark .surahsHeader{
 
 const TOTAL_PAGES = 672;
 
-const PAGE_PATH = "pages/";
+const PAGE_PATH = "images/";
 
 const PAGE_EXTENSION = ".jpg";
 
@@ -2941,8 +3026,8 @@ const SURAH_PAGES = {
     86: 618, 87: 618, 88: 619, 89: 620, 90: 621, 91: 622,
     92: 622, 93: 623, 94: 623, 95: 624, 96: 624, 97: 625,
     98: 625, 99: 626, 100: 626, 101: 627, 102: 627, 103: 628,
-    104: 628, 105: 629, 106: 629, 107: 629, 108: 629, 109: 630,
-    110: 630, 111: 631, 112: 631, 113: 631, 114: 631
+    104: 628, 105: 628, 106: 629, 107: 629, 108: 629, 109: 630,
+    110: 630, 111: 630, 112: 631, 113: 631, 114: 631
 
 };
 
@@ -5295,35 +5380,34 @@ function restoreLastPage(){
    SURAH MENU
 ========================================================= */
 
+/* =========================================================
+   SURAH MENU
+========================================================= */
+
 const surahsOverlay =
-  document.getElementById(
-    "surahsOverlay"
-  );
+  document.getElementById("surahsOverlay");
 
 const surahsList =
-  document.getElementById(
-    "surahsList"
-  );
+  document.getElementById("surahsList");
+
+const surahSearch =
+  document.getElementById("surahSearch");
+
+const surahsItems =
+  document.getElementById("surahsItems");
 
 const surahsButton =
-  document.getElementById(
-    "surahsButton"
-  );
+  document.getElementById("surahsButton");
 
 const closeSurahsButton =
-  document.getElementById(
-    "closeSurahs"
-  );
+  document.getElementById("closeSurahs");
 
-
-/* =========================================================
-   CREATE SURAH LIST 1 → 114
-========================================================= */
 
 function createSurahsList(){
 
-  surahsList.innerHTML = "";
+  if(!surahsItems) return;
 
+  surahsItems.innerHTML = "";
 
   for(
     let number = 1;
@@ -5334,21 +5418,22 @@ function createSurahsList(){
     const item =
       document.createElement("button");
 
-    item.type =
-      "button";
+    item.type = "button";
 
-    item.className =
-      "surahItem";
-
+    item.className = "surahItem";
 
     const page =
       SURAH_PAGES[number];
-
 
     const name =
       SURAH_NAMES[number] ||
       `سورة ${number}`;
 
+    item.dataset.number =
+      String(number);
+
+    item.dataset.name =
+      name;
 
     item.innerHTML = `
 
@@ -5366,12 +5451,10 @@ function createSurahsList(){
 
     `;
 
-
     item.setAttribute(
       "aria-label",
       `السورة رقم ${number}: ${name}`
     );
-
 
     item.addEventListener(
       "click",
@@ -5381,9 +5464,7 @@ function createSurahsList(){
 
         setTimeout(
           () => {
-
             goToPage(page);
-
           },
           180
         );
@@ -5391,78 +5472,155 @@ function createSurahsList(){
       }
     );
 
-
-    surahsList.appendChild(item);
+    surahsItems.appendChild(item);
 
   }
 
 }
 
 
-/* =========================================================
-   OPEN SURAH MENU
-========================================================= */
+function searchSurahs(){
+
+  if(!surahSearch || !surahsItems) return;
+
+  const query =
+    surahSearch.value
+      .trim()
+      .toLowerCase();
+
+  const items =
+    surahsItems.querySelectorAll(
+      ".surahItem"
+    );
+
+  items.forEach(
+    item => {
+
+      const number =
+        item.dataset.number;
+
+      const name =
+        item.dataset.name
+          .toLowerCase();
+
+      const matches =
+        query === "" ||
+        name.includes(query) ||
+        number === query;
+
+      item.style.display =
+        matches
+          ? "flex"
+          : "none";
+
+    }
+  );
+
+}
+
 
 function openSurahs(){
 
+  if(!surahsOverlay) return;
+
   createSurahsList();
+
+  if(surahSearch){
+
+    surahSearch.value = "";
+
+    surahSearch.addEventListener(
+      "input",
+      searchSurahs
+    );
+
+  }
 
   surahsOverlay.classList.add(
     "show"
   );
 
+  if(surahSearch){
+
+    setTimeout(
+      () => {
+        surahSearch.focus();
+      },
+      100
+    );
+
+  }
+
 }
 
 
-/* =========================================================
-   CLOSE SURAH MENU
-========================================================= */
-
 function closeSurahs(){
+
+  if(!surahsOverlay) return;
 
   surahsOverlay.classList.remove(
     "show"
   );
 
+  if(surahSearch){
+
+    surahSearch.value = "";
+
+  }
+
 }
 
 
-/* =========================================================
-   EVENTS
-========================================================= */
+if(surahsButton){
 
-surahsButton.addEventListener(
-  "click",
-  openSurahs
-);
+  surahsButton.addEventListener(
+    "click",
+    openSurahs
+  );
 
-
-closeSurahsButton.addEventListener(
-  "click",
-  closeSurahs
-);
+}
 
 
-surahsOverlay.addEventListener(
-  "click",
-  event => {
+if(closeSurahsButton){
 
-    if(
-      event.target ===
-      surahsOverlay
-    ){
+  closeSurahsButton.addEventListener(
+    "click",
+    closeSurahs
+  );
 
-      closeSurahs();
+}
+
+
+if(surahSearch){
+
+  surahSearch.addEventListener(
+    "input",
+    searchSurahs
+  );
+
+}
+
+
+if(surahsOverlay){
+
+  surahsOverlay.addEventListener(
+    "click",
+    event => {
+
+      if(
+        event.target ===
+        surahsOverlay
+      ){
+
+        closeSurahs();
+
+      }
 
     }
+  );
 
-  }
-);
+}
 
-
-/* =========================================================
-   ESC KEY
-========================================================= */
 
 document.addEventListener(
   "keydown",
